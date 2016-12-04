@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# != 3 ] ; then
+    echo "usage: $0 <window id> <rate> <seconds>" >&2
+    exit 1
+fi
+
+ID=$1
+RATE=$2
+SECONDS=$3
+
+INTERVAL=$(echo "1/$RATE" | bc -l)
+COUNT=$((RATE*SECONDS))
+
+for i in $(seq -f "%04g" $COUNT) ; do
+    import -window $ID $i.png
+    sleep $INTERVAL
+done
+
+ffmpeg -y -framerate $RATE -i "%04d.png" -r $RATE test.mp4
